@@ -1,0 +1,34 @@
+{
+  "queues": {
+    "greetingQueue": {
+      "size": 100000,
+      "kind": "FollyMPMCQueue"
+    }
+  },
+  "modules": {
+    "engHello": {
+      "user_module_type": "HelloModule",
+      "output": "greetingQueue",
+      "greeting_text": "hello",
+      "wait_between_sends_ms": 1
+    },
+    "itaHello": {
+      "user_module_type": "HelloModule",
+      "output": "greetingQueue",
+      "greeting_text": "ciao",
+      "wait_between_sends_ms": 2
+    },
+    "oneGoodbye": {
+      "user_module_type": "GoodbyeModule",
+      "input": "greetingQueue"
+    },
+    "oneMoreGoodbye": {
+      "user_module_type": "GoodbyeModule",
+      "input": "greetingQueue"
+    },
+    "anotherGoodbye": {
+      "user_module_type": "GoodbyeModule",
+      "input": "greetingQueue"
+    }
+  }
+}
