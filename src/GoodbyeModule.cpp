@@ -30,14 +30,14 @@ dunedaq::giomod::GoodbyeModule::init()
 void
 dunedaq::giomod::GoodbyeModule::do_configure(const std::vector<std::string>& args)
 {
-  thread_.start_working_thread_();
+  thread_.start_working_thread();
 }
 
 
 void
 dunedaq::giomod::GoodbyeModule::do_unconfigure(const std::vector<std::string>& args)
 {
-  thread_.stop_working_thread_();
+  thread_.stop_working_thread();
 }
 
 void
@@ -54,15 +54,22 @@ void
 dunedaq::giomod::GoodbyeModule::do_work()
 {
   std::string s;
+  uint count=0;
   while (thread_.thread_running()) {
     if (source_->can_pop()) {
       try {
         source_->pop(s);
-        ers::info(dunedaq::giomod::GreetingResponse(ERS_HERE, s, this->get_name()));	
+        ++count;
+        if(!count%10000) 
+          ers::info(dunedaq::giomod::GreetingResponse(ERS_HERE, s, this->get_name()));	
       }
       catch (ers::Issue &ex) {
          ers::error(dunedaq::giomod::GreetingReceptionFailure(ERS_HERE, ex));
       }
+      catch (std::runtime_error &ex) {
+       //ers::error(dunedaq::giomod::GreetingReceptionFailure(ERS_HERE, ex));
+    }
+
     } 
   }
 }

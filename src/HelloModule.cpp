@@ -45,13 +45,13 @@ dunedaq::giomod::HelloModule::do_unconfigure(const std::vector<std::string>& arg
 void
 dunedaq::giomod::HelloModule::do_start(const std::vector<std::string>& args)
 {
-  thread_.start_working_thread_();
+  thread_.start_working_thread();
 }
 
 void
 dunedaq::giomod::HelloModule::do_stop(const std::vector<std::string>& args)
 {
-  thread_.stop_working_thread_();
+  thread_.stop_working_thread();
 }
 
 void
@@ -62,12 +62,18 @@ dunedaq::giomod::HelloModule::do_work()
     try {
       std::ostringstream os;
       os << count << " " << greeting_text_;
-      sink_->push(std::move(os.str()));
-      ++count;
+      if (sink_->can_push()) {
+	sink_->push(std::move(os.str()));
+        ++count;
+      }
     }
     catch (ers::Issue &ex) {
        ers::error(dunedaq::giomod::GreetingFailed(ERS_HERE, ex));
        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    catch (std::runtime_error &ex) {
+       //ers::error(dunedaq::giomod::GreetingFailed(ERS_HERE, ex));
+       //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     catch (std::exception &ex) {
        ers::error(dunedaq::giomod::GreetingFailed(ERS_HERE, ex));
